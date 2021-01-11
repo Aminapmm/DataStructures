@@ -1,5 +1,4 @@
-package Datastrucures;
-import Datastrucures.Stack_with_array;
+package DSA.Datastructures.LinkedList;
 
 public class SinglyLinkedList {
 
@@ -38,6 +37,17 @@ public class SinglyLinkedList {
             new_node.next = head;
             head = new_node;
         }
+    }
+
+    public boolean Contains(String key){
+        Node current=head;
+        while(current!=null){
+            if(current.data.equals(key)){
+                return true;
+            }
+            current = current.next;
+        }
+        return false;
     }
 
     public int getSize(){

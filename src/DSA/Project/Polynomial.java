@@ -1,4 +1,4 @@
-package Project;
+package DSA.Project;
 
 public class Polynomial{
 

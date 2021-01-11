@@ -1,19 +1,20 @@
-package Datastrucures.Tree;
+package DSA.Datastructures.Tree;
 
 import java.lang.*;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 
 public interface Heap {
-    public  void heapify(int [] arr,int i);
-    public int [] swap(int []arr ,int pos1,int pos2);
+    public void heapifydown(int i);
+    public void swap(int pos1,int pos2);
     public void Insert(int key);
-    public void delete();
+    public int Delete();
     public int left_Child(int pos);
     public int right_Child(int pos);
 
 }
-class Minheap{
+
+class Minheap implements Heap{
     int max_size;
     int size=0;
     int [] minheap;
@@ -36,6 +37,7 @@ class Minheap{
     public int getMinimum(){
         return minheap[1];
     }
+
 
     public int left_Child(int pos){
         return 2*pos;
@@ -82,10 +84,17 @@ class Minheap{
 
         }
     }
+
+    @Override
+    public void heapifydown(int i) {
+
+    }
+
     public void swap(int pos1, int pos2){
         int temp = minheap[pos1];
         minheap[pos1] = minheap[pos2];
         minheap[pos2]=temp;
+
     }
 
     public void Heapify_Up(){
@@ -153,18 +162,39 @@ class Minheap{
     }
 }
 
-class Maxheap {
-    int size;
-    int [] arr;
-
+class Maxheap implements Heap {
+    int size=0;
+    int [] maxheap;
+    int max_size;
 
     public Maxheap(int [] numbers){
-        arr = numbers;
-        size = numbers.length;
+       max_size = numbers.length+1;
+       size = numbers.length;
+       System.arraycopy(numbers, 0,maxheap,1,size);
+    }
+
+    public Maxheap(int n){
+        max_size = n;
+        maxheap = new int[max_size+1];
+        maxheap[0]=Integer.MIN_VALUE;
+    }
+
+    public boolean isLeaf(int pos){
+        return(left_Child(pos)<=size||right_Child(pos)<=size?false:true);
+    }
+
+    public int getParent(int pos){ return pos/2;}
+
+    public int left_Child(int pos){
+        return 2*pos;
+    }
+
+    public int right_Child(int pos){
+        return 2*pos+1;
     }
 
     public int getMaximum(){
-        return arr[0];
+        return maxheap[1];
     }
 
     public void sort(){
@@ -174,91 +204,115 @@ class Maxheap {
 
         for(int i=size-1;i>0;i--){
             swap(i,0);
-            heapify(i,0);
+            heapifydown(0);
         }
 
     }
 
 
-    public void swap(int pos1, int pos2){
-        int temp = arr[pos1];
-        arr[pos1] = arr[pos2];
-        arr[pos2]=temp;
+    public void swap(int fpos, int spos){
+        int temp = maxheap[fpos];
+        maxheap[fpos] = maxheap[spos];
+        maxheap[spos]=temp;
     }
 
-    public void heapify(int n,int i) {
+    public void heapifydown(int pos) {
 
+        int left_child = left_Child(pos);
+        int right_child = right_Child(pos);
 
+        if(!isLeaf(pos)){
+            if(maxheap[pos]<maxheap[left_child]||maxheap[pos]<maxheap[right_child]){
+                if(maxheap[left_child]>maxheap[right_child]){
+                    swap(pos,left_child);
+                    heapifydown(left_child);
+                    pos = left_child;
+                }
 
-            int largest = i;
-            int left_child = 2*i + 1;
-            int right_child = 2*i + 2;
-
-            if(left_child<n&&arr[left_child]>arr[largest]){
-                largest=left_child;
+                else {
+                    swap(pos,right_child);
+                    pos = right_child;
+                }
+                heapifydown(pos);
             }
+        }
 
-            if(right_child<n&&arr[right_child]>arr[largest]){
-                largest = right_child;
-            }
+    }
 
-            if(largest!=i){
-                swap(largest,i);
-                heapify(n,largest);
-            }
+    public void heapifyUp(int pos){
+        int temp = maxheap[pos];
 
-
-
+        while(pos>0 && temp > maxheap[getParent(pos)]&&getParent(pos)>0){
+            maxheap[pos] = maxheap[getParent(pos)];
+            pos = getParent(pos);
+        }
+        maxheap[pos] = temp;
     }
 
     public void buildMaxHeap(){
-        int start_index = (arr.length/2)-1;
-        for(int i=start_index;i>=0;i--){
-            heapify(arr.length,i);
+        int start_index = (size/2);
+        for(int i=start_index;i>=1;i--){
+            heapifydown(i);
         }
     }
-    public void insert(int n){
-        size++;
-        int [] temp = new int[size];
-        for(int i=0;i<size-1;i++){
-            temp[i]=arr[i];
+    public void Insert(int key){
+
+        if(max_size==size) {
+            max_size++;
+            size++;
+            int[] tmp = new int[max_size];
+            tmp[0]=Integer.MIN_VALUE;
+            System.arraycopy(maxheap, 1, tmp, 1, size);
+            tmp[size] = key;
+            maxheap = new int[max_size];
+            System.arraycopy(tmp, 1, maxheap, 1, size);
+            return;
         }
-        temp[size-1]=n;
-        arr=temp;
-        buildMaxHeap();
+
+        else {
+            size++;
+            maxheap[size] = key;
+            heapifyUp(size);
+        }
     }
 
-    public int delete(){
-        int deleted_element = arr[0];
-        swap(0,size-1);
-        size--;
-        int [] temp_arr = new int[size];
-        for(int i=0;i<size;i++){
-            temp_arr[i]=arr[i];
-        }
-        arr = temp_arr;
-        heapify(size,0);
-        return deleted_element;
-
+    public int Delete(){
+        int max = maxheap[1];
+       swap(1,size);
+       size--;
+       heapifydown(1);
+       return max;
     }
 
     public String toString(){
         String output="";
-        for(int i:arr){
-            output+=String.format("%d ",i);
+        for(int i=1;i<=size;i++){
+            output+=String.format("%d ",maxheap[i]);
         }
         return output;
 
     }
 
     public static void main(String[] args) {
-        int [] arr = {36,746,0,34,2,5};
-        Maxheap h1 = new Maxheap(arr);
+        //int [] arr = {36,746,0,34,2,5};
+        Maxheap h1 = new Maxheap(6);
+        //h1.Insert(36);
+        h1.Insert(36);
+        h1.Insert(746);
+        h1.Insert(1000);
+        h1.Insert(10);
+        h1.Insert(15);
+
+        System.out.println(h1);
+        h1.Delete();
+        System.out.println(h1);
+        h1.Delete();
+        System.out.println(h1);
+        h1.Delete();
         //h1.buildMaxHeap();
-        h1.buildMaxHeap();
-        System.out.println(h1);
-        h1.insert(1000);
-        System.out.println(h1);
+        //System.out.println(h1);
+        //h1.Insert(1000);
+        //System.out.println(h1);
 
 
 

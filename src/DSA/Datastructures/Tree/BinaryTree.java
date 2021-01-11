@@ -1,4 +1,4 @@
-package Datastrucures.Tree;
+package DSA.Datastructures.Tree;
 import java.util.*;
 
 class Node{

@@ -1,4 +1,4 @@
-package Datastrucures;
+package DSA.Datastructures.LinkedList;
 
 interface Stack{
     public void push(String data);

@@ -1,4 +1,4 @@
-package Datastrucures;
+package DSA.Datastructures;
 
 interface Queue{
     public boolean isEmpty();
